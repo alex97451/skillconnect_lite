@@ -13,7 +13,7 @@ class AuthWrapper extends StatelessWidget {
     // BlocBuilder écoute les changements d'état de AuthBloc
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
-        print('AuthWrapper received state: $state');
+      
         // Afficher l'écran d'accueil si authentifié
         if (state is Authenticated) {
           

@@ -16,7 +16,7 @@ class FreelancerRepositoryImpl implements FreelancerRepository {
   });
 
   @override
-  Future<Either<Failure, List<Freelancer>>> getFreelancers() async {
+  Future<Either<Failure, List<Freelancer>>> getFreelancers() async {    
     
 
     try {
@@ -35,5 +35,22 @@ class FreelancerRepositoryImpl implements FreelancerRepository {
     }
   }
 
+ // --- Implémentation de la méthode pour les détails ---
+  @override
+  Future<Either<Failure, Freelancer>> getFreelancerDetails(String id) async {
+     
+
+     try {
+       // Appeler la source de données pour les détails
+       final remoteFreelancer = await remoteDataSource.getFreelancerDetails(id);
+       // Retourner directement car FreelancerModel étend Freelancer
+       return Right(remoteFreelancer);
+     } on ServerException catch (e) {
+       // Mapper l'exception serveur (incluant potentiellement "Not Found") en Failure
+       return Left(ServerFailure(message: e.message));
+     } on Exception catch (e) {
+       return Left(ServerFailure(message: 'Erreur inattendue: ${e.toString()}'));
+     }
+  }
   
 }

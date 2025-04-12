@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../domain/entities/freelancer.dart'; // Importer l'entité
-
+import '../pages/freelancer_detail_page.dart';
 class FreelancerListItem extends StatelessWidget {
   final Freelancer freelancer;
 
@@ -67,8 +67,12 @@ class FreelancerListItem extends StatelessWidget {
             style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant), // Couleur pour sous-titre
         ),
         trailing: Icon(Icons.chevron_right, color: colorScheme.outline), // Indicateur pour action future
-        onTap: () {
-          // TODO: Implémenter la navigation vers la page de détail du freelance
+          onTap: () {
+          // Naviguer vers la page de détail en passant l'ID du freelance
+          Navigator.of(context).push(MaterialPageRoute(
+            // Assurez-vous que FreelancerDetailPage est bien importé
+            builder: (_) => FreelancerDetailPage(freelancerId: freelancer.id),
+          ));
           print('Tapped on ${freelancer.name}');
         },
       ),

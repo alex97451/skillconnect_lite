@@ -55,21 +55,21 @@ class _SignUpPageState extends State<SignUpPage> {
    
      body: BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-     // Gérer uniquement Loading et Failure ici
-     if (state is AuthLoading) {
-     
-       if (!_isLoading) setState(() { _isLoading = true; });
-     } else if (state is AuthFailureState) {
-       // Assurer que isLoading est false et montrer l'erreur
-       if (_isLoading) setState(() { _isLoading = false; });
-       _showErrorSnackBar(context, state.failure.message);
-     } else {
-       // Pour tout autre état (Authenticated, Unauthenticated, Initial),
-       // s'assurer simplement que l'indicateur de chargement est caché
-       if (_isLoading) setState(() { _isLoading = false; });
-     }
-   },
-       child: SafeArea(
+        if (state is AuthLoading) {
+          if (!_isLoading) setState(() { _isLoading = true; });
+        } else if (state is AuthFailureState) {
+          if (_isLoading) setState(() { _isLoading = false; });
+          _showErrorSnackBar(context, state.failure.message);
+        } else if (state is Authenticated) {
+          // Add this condition to handle successful authentication
+          if (_isLoading) setState(() { _isLoading = false; });
+          // Pop all routes and let AuthWrapper handle the navigation
+          Navigator.of(context).popUntil((route) => route.isFirst);
+        } else {
+          if (_isLoading) setState(() { _isLoading = false; });
+        }
+      },
+      child: SafeArea(
          child: Center(
            child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),

@@ -7,6 +7,7 @@ abstract class FreelancerRemoteDataSource {
   ///
   /// Lance une [ServerException] en cas d'erreur serveur/API.
   Future<List<FreelancerModel>> getFreelancers();
+  Future<FreelancerModel> getFreelancerDetails(String id);
 }
 
 // Implémentation simulée avec une liste codée en dur
@@ -42,5 +43,20 @@ class FreelancerRemoteDataSourceImpl implements FreelancerRemoteDataSource {
     //   throw ServerException(message: 'Erreur API: ${response.statusCode}');
     // }
     // --------------------------------------------
+  }
+  @override
+  Future<FreelancerModel> getFreelancerDetails(String id) async {
+    // Simuler un délai réseau
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    // Simuler la recherche dans notre liste mock
+    try {
+      // Utiliser firstWhere pour trouver par ID ou lancer une erreur si non trouvé
+      final freelancer = _mockFreelancers.firstWhere((f) => f.id == id);
+      return freelancer;
+    } catch (e) {
+      // Transformer l'erreur StateError (si non trouvé) en ServerException
+      throw ServerException(message: 'Freelance non trouvé (ID: $id)');
+    }
   }
 }

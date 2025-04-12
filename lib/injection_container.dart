@@ -26,6 +26,8 @@ import 'features/freelancer/data/repositories/freelancer_repository_impl.dart';
 import 'features/freelancer/domain/repositories/freelancer_repository.dart';
 // Use Cases
 import 'features/freelancer/domain/usecases/get_freelancers.dart';
+import 'features/freelancer/domain/usecases/get_freelancer_details.dart';
+import 'features/freelancer/presentation/cubit/freelancer_detail_cubit.dart';
 // Instance du Service Locator GetIt
 final sl = GetIt.instance;
 
@@ -66,12 +68,12 @@ void initDi() {
   // Feature: Freelancer 
   // ========================================
 
-  // Blocs
-  sl.registerFactory(
-    () => FreelancerBloc(getFreelancers: sl()), // Injecte le Use Case
-  );
+  // Blocs & Cubits (Factory car ils ont un état)
+  sl.registerFactory(() => FreelancerBloc(getFreelancers: sl()));
+  sl.registerFactory(() => FreelancerDetailCubit(getFreelancerDetails: sl()));
   // Use Cases
   sl.registerLazySingleton(() => GetFreelancers(sl())); // Enregistre GetFreelancers
+   sl.registerLazySingleton(() => GetFreelancerDetails(sl()));
 
   // Repositories
   sl.registerLazySingleton<FreelancerRepository>( // Enregistre l'implémentation contre l'interface
