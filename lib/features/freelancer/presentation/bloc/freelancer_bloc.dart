@@ -2,8 +2,8 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
 // Importer les éléments nécessaires du Domain et Core
-import '../../../domain/entities/freelancer.dart';
-import '../../../domain/usecases/get_freelancers.dart';
+import '../../domain/entities/freelancer.dart';
+import '../../domain/usecases/get_freelancers.dart';
 import '../../../../core/usecases/usecase.dart'; // Pour NoParams si GetFreelancers l'utilise
 import '../../../../core/error/failures.dart'; // Pour Failure
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/auth_bloc.dart'; // Importer le bloc pour dispatcher l'événement
-
+import '../../../freelancer/presentation/pages/freelancer_list_page.dart';
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -12,7 +12,7 @@ class HomePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Accueil'),
+        title: const Text('Liste des Freelances'),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -24,9 +24,7 @@ class HomePage extends StatelessWidget {
           )
         ],
       ),
-      body: Center(
-        child: Text('Bienvenue ${user.email ?? user.id}!'), // Afficher email ou ID
-      ),
+      body: const FreelancerListPage(),
     );
   }
 }
