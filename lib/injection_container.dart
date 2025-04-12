@@ -16,6 +16,16 @@ import 'features/auth/domain/usecases/sign_out.dart';
 // Blocs
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 
+// --- Imports Freelancer --- //
+//blocs
+import 'features/freelancer/presentation/bloc/freelancer_bloc.dart';
+// Data Sources
+import 'features/freelancer/data/datasources/freelancer_remote_data_source.dart';
+// Repositories
+import 'features/freelancer/data/repositories/freelancer_repository_impl.dart';
+import 'features/freelancer/domain/repositories/freelancer_repository.dart';
+// Use Cases
+import 'features/freelancer/domain/usecases/get_freelancers.dart';
 // Instance du Service Locator GetIt
 final sl = GetIt.instance;
 
@@ -52,7 +62,26 @@ void initDi() {
   sl.registerLazySingleton<FirebaseAuthDataSource>(
     () => FirebaseAuthDataSourceImpl(firebaseAuth: sl()),
   );
+// ========================================
+  // Feature: Freelancer 
+  // ========================================
 
+  // Blocs
+  sl.registerFactory(
+    () => FreelancerBloc(getFreelancers: sl()), // Injecte le Use Case
+  );
+  // Use Cases
+  sl.registerLazySingleton(() => GetFreelancers(sl())); // Enregistre GetFreelancers
+
+  // Repositories
+  sl.registerLazySingleton<FreelancerRepository>( // Enregistre l'implémentation contre l'interface
+    () => FreelancerRepositoryImpl(remoteDataSource: sl()), // Injecte la datasource
+  );
+
+  // Data Sources
+  sl.registerLazySingleton<FreelancerRemoteDataSource>( // Enregistre l'implémentation contre l'interface
+    () => FreelancerRemoteDataSourceImpl(), // N'a pas de dépendance pour l'instant
+  );
 
 
   // ========================================
