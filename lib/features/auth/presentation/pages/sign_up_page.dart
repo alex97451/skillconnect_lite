@@ -52,21 +52,23 @@ class _SignUpPageState extends State<SignUpPage> {
    final textTheme = Theme.of(context).textTheme;
 
    return Scaffold(
-     // appBar: AppBar(title: const Text('Inscription')), // Optionnel, titre dans le body
+   
      body: BlocListener<AuthBloc, AuthState>(
-       listener: (context, state) {
-         if (state is AuthLoading) {
-           setState(() { _isLoading = true; });
-         } else if (state is AuthFailureState) {
-           setState(() { _isLoading = false; });
-           _showErrorSnackBar(context, state.failure.message);
-         } else if (state is Authenticated || state is Unauthenticated) {
-           if (_isLoading) {
-              setState(() { _isLoading = false; });
-           }
-           // La redirection vers HomePage si Authenticated est gérée par AuthWrapper
-         }
-       },
+      listener: (context, state) {
+     // Gérer uniquement Loading et Failure ici
+     if (state is AuthLoading) {
+     
+       if (!_isLoading) setState(() { _isLoading = true; });
+     } else if (state is AuthFailureState) {
+       // Assurer que isLoading est false et montrer l'erreur
+       if (_isLoading) setState(() { _isLoading = false; });
+       _showErrorSnackBar(context, state.failure.message);
+     } else {
+       // Pour tout autre état (Authenticated, Unauthenticated, Initial),
+       // s'assurer simplement que l'indicateur de chargement est caché
+       if (_isLoading) setState(() { _isLoading = false; });
+     }
+   },
        child: SafeArea(
          child: Center(
            child: SingleChildScrollView(

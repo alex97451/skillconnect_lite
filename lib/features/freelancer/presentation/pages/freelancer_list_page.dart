@@ -1,73 +1,104 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../injection_container.dart'; // Importer sl pour créer le Bloc
-import '../bloc/freelancer_bloc.dart'; // Importer le Bloc, State, Event
-import '../widgets/freelancer_list_item.dart'; // Importer le widget d'item
+import '../../../../injection_container.dart';
+import '../bloc/freelancer_bloc.dart';
+import '../widgets/freelancer_list_item.dart';
 
 class FreelancerListPage extends StatelessWidget {
   const FreelancerListPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Utiliser BlocProvider pour créer et fournir une instance de FreelancerBloc
-    // à cet endroit de l'arbre de widgets.
     return BlocProvider(
-      create: (context) => sl<FreelancerBloc>() // Récupérer le Bloc depuis GetIt
-        ..add(FetchFreelancers()), // IMPORTANT: Envoyer l'événement initial pour charger les données
-      child: Scaffold( // Un Scaffold pour la structure de base de la page
-      
-        
-        body: RefreshIndicator( // Permet le "Pull-to-refresh"
+      create: (context) => sl<FreelancerBloc>()..add(FetchFreelancers()),
+      child: Scaffold(
+        // Pas d'AppBar ici car intégrée dans HomePage
+        body: RefreshIndicator(
            onRefresh: () async {
-             // Déclencher à nouveau le fetch lors du refresh
              context.read<FreelancerBloc>().add(FetchFreelancers());
-             // Attendre la fin de la mise à jour (optionnel mais bonne pratique)
-             // On peut écouter le stream du bloc pour savoir quand c'est fini
              await context.read<FreelancerBloc>().stream.firstWhere((state) => state is! FreelancerLoading);
            },
+           // --- Modification du BlocBuilder ---
            child: BlocBuilder<FreelancerBloc, FreelancerState>(
             builder: (context, state) {
-              // Afficher un indicateur de chargement
+              // --- État Chargement / Initial Amélioré ---
               if (state is FreelancerLoading || state is FreelancerInitial) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              // Afficher la liste si chargée
-              else if (state is FreelancerLoaded) {
-                 // Gérer le cas où la liste est vide
-                 if (state.freelancers.isEmpty) {
-                    return const Center(child: Text('Aucun freelance trouvé.'));
-                 }
-                 // Construire la liste
-                return ListView.builder(
-                  itemCount: state.freelancers.length,
-                  itemBuilder: (context, index) {
-                    final freelancer = state.freelancers[index];
-                    return FreelancerListItem(freelancer: freelancer);
-                  },
+                return const Center(
+                    child: Column( // Centrer verticalement
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(),
+                        SizedBox(height: 10),
+                        Text('Chargement des freelances...'),
+                      ],
+                    ),
                 );
               }
-              // Afficher un message d'erreur
-              else if (state is FreelancerError) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('Erreur: ${state.message}'),
-                      const SizedBox(height: 10),
-                      ElevatedButton(
-                         onPressed: () => context.read<FreelancerBloc>().add(FetchFreelancers()),
-                         child: const Text('Réessayer'),
-                       )
-                    ],
+              // --- État Chargé ---
+              else if (state is FreelancerLoaded) {
+                 // Gérer liste vide
+                 if (state.freelancers.isEmpty) {
+                    return const Center(
+                        child: Column( // Centrer
+                          mainAxisAlignment: MainAxisAlignment.center,
+                           children: [
+                              Icon(Icons.people_outline, size: 48, color: Colors.grey),
+                              SizedBox(height: 10),
+                              Text('Aucun freelance trouvé pour le moment.'),
+                           ],
+                        )
+                    );
+                 }
+                 // Afficher la liste avec padding
+                return Padding( // Ajouter du padding autour de la liste
+                  padding: const EdgeInsets.symmetric(vertical: 4.0), // Juste vertical pour coller aux bords si besoin
+                  child: ListView.builder(
+                    itemCount: state.freelancers.length,
+                    itemBuilder: (context, index) {
+                      final freelancer = state.freelancers[index];
+                      return FreelancerListItem(freelancer: freelancer);
+                    },
                   ),
                 );
               }
-              // État par défaut (ne devrait pas arriver)
+              // --- État Erreur Amélioré ---
+              else if (state is FreelancerError) {
+                return Center(
+                  child: Padding( // Ajouter du padding
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.error_outline, size: 48, color: Theme.of(context).colorScheme.error),
+                        const SizedBox(height: 10),
+                        Text(
+                          'Oops ! Une erreur est survenue :',
+                           style: Theme.of(context).textTheme.titleMedium,
+                           textAlign: TextAlign.center,
+                        ),
+                         const SizedBox(height: 5),
+                        Text(
+                          state.message, // Message d'erreur du Bloc
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Theme.of(context).colorScheme.error),
+                        ),
+                        const SizedBox(height: 20),
+                        ElevatedButton.icon( // Bouton avec icône
+                           icon: const Icon(Icons.refresh),
+                           label: const Text('Réessayer'),
+                           onPressed: () => context.read<FreelancerBloc>().add(FetchFreelancers()),
+                         )
+                      ],
+                    ),
+                  ),
+                );
+              }
+              // État par défaut
               else {
-                return const Center(child: Text('Quelque chose s\'est mal passé.'));
+                return const Center(child: Text('État inconnu.'));
               }
             },
-                   ),
+           ),
         ),
       ),
     );
