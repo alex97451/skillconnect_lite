@@ -3,11 +3,11 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
 // Importer les éléments nécessaires du Domain et Core
-import '../../../domain/entities/user.dart';
-import '../../../domain/usecases/get_auth_status.dart';
-import '../../../domain/usecases/sign_in.dart';
-import '../../../domain/usecases/sign_up.dart';
-import '../../../domain/usecases/sign_out.dart';
+import '../../domain/entities/user.dart';
+import '../../domain/usecases/get_auth_status.dart';
+import '../../domain/usecases/sign_in.dart';
+import '../../domain/usecases/sign_up.dart';
+import '../../domain/usecases/sign_out.dart';
 import '../../../../core/error/failures.dart';
 
 // Lier les fichiers d'états et d'événements
