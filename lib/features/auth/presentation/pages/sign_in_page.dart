@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/auth_bloc.dart'; // Importer Bloc, Events, States
-
+import 'sign_up_page.dart'; // Importer la page d'inscription
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
 
@@ -92,7 +92,20 @@ class _SignInPageState extends State<SignInPage> {
                           onPressed: _signIn, // Appelle la méthode _signIn
                           child: const Text('Se Connecter'),
                         ),
-                  // TODO: Ajouter un bouton/lien pour aller vers la page d'inscription
+                     const SizedBox(height: 15), 
+                  // Lien pour aller vers la page d'inscription
+                  TextButton(
+                    onPressed: _isLoading ? null : () { // Désactivé pendant le chargement
+                      // Naviguer vers SignUpPage
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (_) => BlocProvider.value( // Important: Fournir le Bloc existant
+                            value: BlocProvider.of<AuthBloc>(context),
+                            child: const SignUpPage(),
+                         ),
+                      ));
+                    },
+                    child: const Text('Pas encore de compte ? S\'inscrire'),
+                  )
                 ],
               ),
             ),
